@@ -78,7 +78,7 @@ const CreditProfilesDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sky-100 to-nuetral-50">
+    <div className="min-h-screen bg-gradient-to-br from-sky-50 to-blue-100">
       {/* Header */}
       <div className="bg-blue-500 p-8">
         <h1 className="text-3xl font-bold text-white text-left mx-64">Search Profiles</h1>

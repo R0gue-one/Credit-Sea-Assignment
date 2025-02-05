@@ -1,124 +1,130 @@
 import React, { useState, useEffect } from 'react';
-import {profile} from "../api/api";
+import { profile } from "../api/api";
 import { useParams } from 'react-router-dom';
-import { CreditCard, FileText, User } from 'lucide-react';
+import { CreditCard, FileText, User, AlertCircle, ArrowUpRight, Copy } from 'lucide-react';
 
 const ProfilesBoard = () => {
     const [profileData, setProfileData] = useState(null);
     const [activeSection, setActiveSection] = useState('basic');
+    const [copied, setCopied] = useState(false);
     const profileId = useParams();
 
     const fetchProfile = async () => {
-        console.log(profileId);
         const response = await profile(profileId.id);
-
-        const data = response.data;
-        console.log("Profile: ",data["name"]); 
-
-        setProfileData(data);
+        setProfileData(response.data);
     }
-    
 
-    useEffect(()=>{
+    const handleClick = (item) => {
+        navigator.clipboard.writeText(item.value)
+        .then(() => {
+            setCopied(true)
+            setTimeout(()=>setCopied(false), 3000);
+        })
+        .catch(err => console.error("Failed to copy:", err));
+    }
+
+    useEffect(() => {
         fetchProfile();
-    },[profileId])
+    }, [profileId]);
 
-    if (!profileData) return <div className="p-6">Loading...</div>;
+    if (!profileData) return (
+        <div className="min-h-screen flex items-center justify-center bg-gray-50">
+            <div className="animate-pulse flex items-center space-x-2">
+                <div className="h-4 w-4 bg-blue-600 rounded-full animate-bounce"></div>
+                <div className="h-4 w-4 bg-blue-600 rounded-full animate-bounce delay-100"></div>
+                <div className="h-4 w-4 bg-blue-600 rounded-full animate-bounce delay-200"></div>
+            </div>
+        </div>
+    );
 
     const renderBasicDetails = () => (
-        <div className="space-y-4">
-            <h2 className="text-xl font-semibold mb-4">Basic Details</h2>
-            <div className="grid grid-cols-2 gap-4">
-                <div className="bg-white p-4 rounded-lg shadow">
-                    <p className="text-gray-600">Name</p>
-                    <p className="font-medium">{profileData.name}</p>
-                </div>
-                <div className="bg-white p-4 rounded-lg shadow">
-                    <p className="text-gray-600">Mobile Phone</p>
-                    <p className="font-medium">{profileData.mobilePhone}</p>
-                </div>
-                <div className="bg-white p-4 rounded-lg shadow">
-                    <p className="text-gray-600">PAN</p>
-                    <p className="font-medium">{profileData.pan}</p>
-                </div>
-                <div className="bg-white p-4 rounded-lg shadow">
-                    <p className="text-gray-600">Credit Score</p>
-                    <p className="font-medium">{profileData.creditScore}</p>
-                </div>
+        <div className="space-y-6">
+            <h2 className="text-2xl font-semibold text-gray-900">Basic Details</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                
+                {[
+                    { label: "Name", value: profileData.name, icon: <User size={20} className="text-blue-500" /> },
+                    { label: "Mobile Phone", value: profileData.mobilePhone, icon: <CreditCard size={20} className="text-green-500" /> },
+                    { label: "PAN", value: profileData.pan, icon: <FileText size={20} className="text-purple-500" /> },
+                    { label: "Credit Score", value: profileData.creditScore, icon: <AlertCircle size={20} className="text-orange-500" /> }
+                ].map((item, index) => (
+                    <button 
+                    key={index} 
+                    onClick={() => handleClick(item)} 
+                    className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 transition-all duration-200 hover:shadow-md focus:outline-none w-full text-left"
+                >
+                    <div className='flex item-senter justify-between'>
+                    <div className="flex items-center space-x-3">
+                        {item.icon}
+                        <div className="flex flex-col">
+                            <p className="text-sm font-medium text-gray-500">{item.label}</p>
+                            <p className="text-lg font-semibold text-gray-900 capitalize">{item.value}</p>
+                        </div>
+                    </div>
+                    <Copy className="w-6 h-6 text-gray-400 ml-auto" />
+                    </div>
+                </button>
+                ))}
             </div>
         </div>
     );
 
     const renderReportSummary = () => (
-        <div className="space-y-4">
-            <h2 className="text-xl font-semibold mb-4">Report Summary</h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                <div className="bg-white p-4 rounded-lg shadow">
-                    <p className="text-gray-600">Total Accounts</p>
-                    <p className="font-medium">{profileData.reportSummary.totalAccounts}</p>
-                </div>
-                <div className="bg-white p-4 rounded-lg shadow">
-                    <p className="text-gray-600">Active Accounts</p>
-                    <p className="font-medium">{profileData.reportSummary.activeAccounts}</p>
-                </div>
-                <div className="bg-white p-4 rounded-lg shadow">
-                    <p className="text-gray-600">Closed Accounts</p>
-                    <p className="font-medium">{profileData.reportSummary.closedAccounts}</p>
-                </div>
-                <div className="bg-white p-4 rounded-lg shadow">
-                    <p className="text-gray-600">Current Balance</p>
-                    <p className="font-medium">₹{profileData.reportSummary.currentBalance.toLocaleString()}</p>
-                </div>
-                <div className="bg-white p-4 rounded-lg shadow">
-                    <p className="text-gray-600">Secured Balance</p>
-                    <p className="font-medium">₹{profileData.reportSummary.securedBalance.toLocaleString()}</p>
-                </div>
-                <div className="bg-white p-4 rounded-lg shadow">
-                    <p className="text-gray-600">Unsecured Balance</p>
-                    <p className="font-medium">₹{profileData.reportSummary.unsecuredBalance.toLocaleString()}</p>
-                </div>
-                <div className="bg-white p-4 rounded-lg shadow">
-                    <p className="text-gray-600">Recent Credit Enquiries</p>
-                    <p className="font-medium">{profileData.reportSummary.last7DaysEnquiries}</p>
-                </div>
+        <div className="space-y-6">
+            <h2 className="text-2xl font-semibold text-gray-900">Report Summary</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {[
+                    { label: "Total Accounts", value: profileData.reportSummary.totalAccounts },
+                    { label: "Active Accounts", value: profileData.reportSummary.activeAccounts },
+                    { label: "Closed Accounts", value: profileData.reportSummary.closedAccounts },
+                    { label: "Current Balance", value: `₹${profileData.reportSummary.currentBalance.toLocaleString()}` },
+                    { label: "Secured Balance", value: `₹${profileData.reportSummary.securedBalance.toLocaleString()}` },
+                    { label: "Unsecured Balance", value: `₹${profileData.reportSummary.unsecuredBalance.toLocaleString()}` },
+                    { label: "Recent Credit Enquiries", value: profileData.reportSummary.last7DaysEnquiries }
+                ].map((item, index) => (
+                    <button key={index}
+                    onClick={() => handleClick(item)}
+                    >
+                    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 transition-all duration-200 hover:shadow-md">
+                        <p className="text-sm font-medium text-gray-500">{item.label}</p>
+                        <p className="text-lg font-semibold text-gray-900 mt-1">{item.value}</p>
+                    </div>
+                    </button>
+                ))}
             </div>
         </div>
     );
 
     const renderCreditAccounts = () => (
-        <div className="space-y-4">
-            <h2 className="text-xl font-semibold mb-4">Credit Accounts Information</h2>
-            <div className="space-y-4">
+        <div className="space-y-6">
+            
+            <h2 className="text-2xl font-semibold text-gray-900">Credit Accounts</h2>
+            <div className="space-y-6">
                 {profileData.creditAccounts.map((account) => (
-                    <div key={account._id} className="bg-white p-4 rounded-lg shadow">
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                            <div>
-                                <p className="text-gray-600">Account Number</p>
-                                <p className="font-medium">{account.accountNumber}</p>
+                    <div key={account._id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 transition-all duration-200 hover:shadow-md">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div className="col-span-3">
+                                <div className="flex items-center justify-between">
+                                    <h3 className="text-lg font-semibold text-gray-900 capitalize">{account.bankName}</h3>
+                                    <span className="px-2 py-1 text-sm font-medium rounded-full bg-blue-50 text-slate-700">
+                                        Type- {account.accountType}
+                                    </span>
+                                </div>
                             </div>
-                            <div>
-                                <p className="text-gray-600">Bank Name</p>
-                                <p className="font-medium capitalize">{account.bankName}</p>
-                            </div>
-                            <div>
-                                <p className="text-gray-600">Account Type</p>
-                                <p className="font-medium">{account.accountType}</p>
-                            </div>
-                            <div>
-                                <p className="text-gray-600">Current Balance</p>
-                                <p className="font-medium">₹{account.currentBalance.toLocaleString()}</p>
-                            </div>
-                            <div>
-                                <p className="text-gray-600">Amount Overdue</p>
-                                <p className="font-medium">₹{account.amountOverdue.toLocaleString()}</p>
-                            </div>
-                            <div>
-                                <p className="text-gray-600">Credit Limit</p>
-                                <p className="font-medium">₹{account.creditLimit.toLocaleString()}</p>
-                            </div>
-                            <div className="col-span-2 md:col-span-3">
-                                <p className="text-gray-600">Address</p>
-                                <p className="font-medium">
+                            {[
+                                { label: "Account Number", value: account.accountNumber },
+                                { label: "Current Balance", value: `₹${account.currentBalance.toLocaleString()}` },
+                                { label: "Amount Overdue", value: `₹${account.amountOverdue.toLocaleString()}` },
+                                { label: "Credit Limit", value: `₹${account.creditLimit.toLocaleString()}` }
+                            ].map((item, index) => (
+                                <div key={index}>
+                                    <p className="text-sm font-medium text-gray-500">{item.label}</p>
+                                    <p className="text-base font-semibold text-gray-900 mt-1">{item.value}</p>
+                                </div>
+                            ))}
+                            <div className="col-span-3">
+                                <p className="text-sm font-medium text-gray-500">Address</p>
+                                <p className="text-base text-gray-900 mt-1">
                                     {[
                                         account.address.firstLine,
                                         account.address.secondLine,
@@ -137,54 +143,50 @@ const ProfilesBoard = () => {
     );
 
     return (
-        <div className="min-h-screen bg-gray-50">
-            {/* Header with Name */}
-            <div className="bg-white shadow">
-                <div className="max-w-7xl mx-auto px-4 py-6">
-                    <h1 className="text-3xl font-bold text-gray-900">{profileData.name}</h1>
+        <div className="min-h-screen bg-gradient-to-br from-sky-50 to-blue-100">
+            <div className="bg-gradient-to-r from-blue-500 to-blue-600 shadow-lg">
+                <div className="max-w-7xl mx-auto px-4 py-8">
+                    <h1 className="text-3xl font-bold text-white">Profile Details</h1>
                 </div>
             </div>
 
-            <div className="max-w-7xl mx-auto px-4 py-6">
-                <div className="flex flex-col md:flex-row gap-6">
-                    {/* Navigation Menu */}
-                    <div className="md:w-64 flex-shrink-0">
-                        <div className="bg-white rounded-lg shadow p-4">
-                            <nav className="space-y-2">
-                                <button
-                                    onClick={() => setActiveSection('basic')}
-                                    className={`w-full flex items-center space-x-2 px-4 py-2 rounded-lg ${
-                                        activeSection === 'basic' ? 'bg-blue-50 text-blue-600' : 'hover:bg-gray-50'
-                                    }`}
-                                >
-                                    <User size={20} />
-                                    <span>Basic Details</span>
-                                </button>
-                                <button
-                                    onClick={() => setActiveSection('summary')}
-                                    className={`w-full flex items-center space-x-2 px-4 py-2 rounded-lg ${
-                                        activeSection === 'summary' ? 'bg-blue-50 text-blue-600' : 'hover:bg-gray-50'
-                                    }`}
-                                >
-                                    <FileText size={20} />
-                                    <span>Report Summary</span>
-                                </button>
-                                <button
-                                    onClick={() => setActiveSection('accounts')}
-                                    className={`w-full flex items-center space-x-2 px-4 py-2 rounded-lg ${
-                                        activeSection === 'accounts' ? 'bg-blue-50 text-blue-600' : 'hover:bg-gray-50'
-                                    }`}
-                                >
-                                    <CreditCard size={20} />
-                                    <span>Credit Accounts</span>
-                                </button>
+            {copied && (
+                <div 
+                    className="flex fixed top-5 left-1/2 items-center py-2 px-4 text-white bg-green-500 rounded-lg shadow-lg transition-transform duration-300 transform -translate-x-1/2 animate-slideIn"
+                >
+                    <span>Copied to clipboard</span>
+                </div>
+            )}
+
+            <div className="max-w-7xl mx-auto px-4 py-8">
+                <div className="flex flex-col lg:flex-row gap-8">
+                    <div className="lg:w-64 flex-shrink-0">
+                        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                            <nav className="space-y-1 p-2">
+                                {[
+                                    { id: 'basic', label: 'Basic Details', icon: User },
+                                    { id: 'summary', label: 'Report Summary', icon: FileText },
+                                    { id: 'accounts', label: 'Credit Accounts', icon: CreditCard }
+                                ].map((item) => (
+                                    <button
+                                        key={item.id}
+                                        onClick={() => setActiveSection(item.id)}
+                                        className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors duration-200 ${
+                                            activeSection === item.id
+                                                ? 'bg-blue-50 text-blue-600'
+                                                : 'text-gray-600 hover:bg-gray-50'
+                                        }`}
+                                    >
+                                        <item.icon size={20} />
+                                        <span className="font-medium">{item.label}</span>
+                                    </button>
+                                ))}
                             </nav>
                         </div>
                     </div>
 
-                    {/* Main Content */}
                     <div className="flex-1">
-                        <div className="bg-white rounded-lg shadow p-6">
+                        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
                             {activeSection === 'basic' && renderBasicDetails()}
                             {activeSection === 'summary' && renderReportSummary()}
                             {activeSection === 'accounts' && renderCreditAccounts()}
@@ -194,8 +196,6 @@ const ProfilesBoard = () => {
             </div>
         </div>
     );
-
-
 };
 
 export default ProfilesBoard;
