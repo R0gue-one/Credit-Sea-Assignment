@@ -104,7 +104,7 @@ const ProfilesBoard = () => {
                     <div key={account._id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 transition-all duration-200 hover:shadow-md">
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div className="col-span-3">
-                                <div className="flex items-center justify-between">
+                                <div className="flex items-center space-x-3">
                                     <h3 className="text-lg font-semibold text-gray-900 capitalize">{account.bankName}</h3>
                                     <span className="px-2 py-1 text-sm font-medium rounded-full bg-blue-50 text-slate-700">
                                         Type- {account.accountType}
