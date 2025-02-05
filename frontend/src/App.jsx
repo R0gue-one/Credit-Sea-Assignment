@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useEffect } from 'react'
 import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+
 import './App.css'
 import UploadPage from './components/upload'
 import CreditProfilesPage from './components/creditProfiles';
@@ -12,7 +12,11 @@ import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 
 function App() {
   
+  // useEffect(() => {
+  //     document.title = "CrediSea";
+  // }, []);
 
+  
   return (
     <Router>
       <Navbar /> 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight } from "lucide-react";
+import {creditStats, creditDetails} from '../api/api';
 
 const CreditProfilesDashboard = () => {
   const navigate = useNavigate();
@@ -21,32 +22,31 @@ const CreditProfilesDashboard = () => {
 
   const fetchProfiles = async () => {
     try {
-      setLoading(true);
-      const queryParams = new URLSearchParams({
-        ...filters
-      }).toString();
-      
-      const response = await fetch(`http://localhost:5000/retrieve?${queryParams}`);
-      const data = await response.json();
-      
-      setProfiles(data.profiles);
-      setPagination(data.pagination);
+        setLoading(true);
+        const queryParams = new URLSearchParams({ ...filters }).toString();
+        
+        const response = await creditDetails(queryParams);
+        const data = response.data; // Fix: Use response.data instead of response.json()
+        
+        setProfiles(data.profiles);
+        setPagination(data.pagination);
     } catch (error) {
-      console.error('Error fetching profiles:', error);
+        console.error('Error fetching profiles:', error);
     } finally {
-      setLoading(false);
+        setLoading(false);
     }
-  };
+};
 
-  const fetchStats = async () => {
+const fetchStats = async () => {
     try {
-      const response = await fetch('http://localhost:5000/retrieve/stats/credit-score');
-      const data = await response.json();
-      setStats(data);
+        const response = await creditStats();
+        const data = response.data; // Fix: Use response.data instead of response.json()
+        setStats(data);
     } catch (error) {
-      console.error('Error fetching stats:', error);
+        console.error('Error fetching stats:', error);
     }
-  };
+};
+
 
   useEffect(() => {
     fetchProfiles();
@@ -181,8 +181,8 @@ const CreditProfilesDashboard = () => {
                       </thead>
                       <tbody className="divide-y divide-gray-200">
                         {profiles.map((profile) => (
-                          <tr key={profile._id} className="hover:bg-gray-50">
-                            <td className="px-6 py-4">{profile.name}</td>
+                          <tr key={profile._id} className="">
+                            <td className="px-6 py-4 capitalize">{profile.name}</td>
                             <td className="px-6 py-4">{profile.pan}</td>
                             <td className="px-6 py-4">{profile.creditScore}</td>
                             <td className="px-6 py-4">
@@ -191,7 +191,7 @@ const CreditProfilesDashboard = () => {
                             <td className="px-6 py-4 text-center">
                               <button
                                 onClick={() => handleProfileClick(profile)}
-                                className="inline-flex items-center gap-1 px-4 py-2 bg-lime-500 text-navy rounded-lg hover:bg-blue-600 transition-colors"
+                                className="inline-flex items-center gap-1 px-4 py-2 bg-lime-500 text-navy rounded-lg hover:bg-green-600 transition-colors"
                               >
                                 Details
                                 <ArrowRight size={16} />
@@ -233,11 +233,11 @@ const CreditProfilesDashboard = () => {
             <div className="grid grid-cols-1 gap-4">
               {stats && (
                 <>
-                  <div className="bg-sky-500 p-4 rounded-lg shadow-md w-28 h-28 flex flex-col items-start justify-start">
+                  <div className="bg-sky-400 p-4 rounded-lg shadow-md w-28 h-28 flex flex-col items-start justify-start">
                     <div className="text-gray-800 text-sm">Avg Score</div>
                     <div className="text-xl font-bold text-gray-800">{stats.averageScore}</div>
                   </div>
-                  <div className="bg-emerald-500 p-4 rounded-lg shadow-md w-28 h-28 flex flex-col items-start justify-start">
+                  <div className="bg-emerald-400 p-4 rounded-lg shadow-md w-28 h-28 flex flex-col items-start justify-start">
                     <div className="text-gray-800 text-sm">High Score</div>
                     <div className="text-xl font-bold text-gray-800">{stats.maxScore}</div>
                   </div>

@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { profile } from "../api/api";
 import { useParams } from 'react-router-dom';
-import { CreditCard, FileText, User, AlertCircle, ArrowUpRight, Copy } from 'lucide-react';
+import { CreditCard, FileText, User, AlertCircle, ArrowUpRight, Copy, MapPin, Building2, ChartPie, BookUser } from 'lucide-react';
+import { PieChart, Pie, Cell, LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import SummaryChart from './summaryChart';
 
 const ProfilesBoard = () => {
     const [profileData, setProfileData] = useState(null);
@@ -15,12 +17,15 @@ const ProfilesBoard = () => {
     }
 
     const handleClick = (item) => {
-        navigator.clipboard.writeText(item.value)
-        .then(() => {
-            setCopied(true)
-            setTimeout(()=>setCopied(false), 3000);
-        })
-        .catch(err => console.error("Failed to copy:", err));
+        const text = item.value; 
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textArea);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 3000);
     }
 
     useEffect(() => {
@@ -39,7 +44,11 @@ const ProfilesBoard = () => {
 
     const renderBasicDetails = () => (
         <div className="space-y-6">
-            <h2 className="text-2xl font-semibold text-gray-900">Basic Details</h2>
+            <div className="flex items-center space-x-2">
+                <BookUser className="w-6 h-6 text-blue-500" />
+                <h2 className="text-2xl font-semibold text-gray-900">Basic Details</h2>
+            </div>
+            
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 
                 {[
@@ -71,40 +80,59 @@ const ProfilesBoard = () => {
 
     const renderReportSummary = () => (
         <div className="space-y-6">
-            <h2 className="text-2xl font-semibold text-gray-900">Report Summary</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {[
-                    { label: "Total Accounts", value: profileData.reportSummary.totalAccounts },
-                    { label: "Active Accounts", value: profileData.reportSummary.activeAccounts },
-                    { label: "Closed Accounts", value: profileData.reportSummary.closedAccounts },
-                    { label: "Current Balance", value: `₹${profileData.reportSummary.currentBalance.toLocaleString()}` },
-                    { label: "Secured Balance", value: `₹${profileData.reportSummary.securedBalance.toLocaleString()}` },
-                    { label: "Unsecured Balance", value: `₹${profileData.reportSummary.unsecuredBalance.toLocaleString()}` },
-                    { label: "Recent Credit Enquiries", value: profileData.reportSummary.last7DaysEnquiries }
-                ].map((item, index) => (
-                    <button key={index}
-                    onClick={() => handleClick(item)}
-                    >
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 transition-all duration-200 hover:shadow-md">
-                        <p className="text-sm font-medium text-gray-500">{item.label}</p>
-                        <p className="text-lg font-semibold text-gray-900 mt-1">{item.value}</p>
-                    </div>
-                    </button>
-                ))}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 transition-all duration-200 hover:shadow-md">
+            <div className="flex items-center space-x-2">
+                <FileText className="w-6 h-6 text-blue-500" />
+                <h2 className="text-2xl font-semibold text-gray-900">Report Summary</h2>
+            </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
+                    {[
+                        { label: "Total Accounts", value: profileData.reportSummary.totalAccounts },
+                        { label: "Active Accounts", value: profileData.reportSummary.activeAccounts },
+                        { label: "Closed Accounts", value: profileData.reportSummary.closedAccounts },
+                        { label: "Current Balance", value: `₹${profileData.reportSummary.currentBalance.toLocaleString()}` },
+                        { label: "Secured Balance", value: `₹${profileData.reportSummary.securedBalance.toLocaleString()}` },
+                        { label: "Unsecured Balance", value: `₹${profileData.reportSummary.unsecuredBalance.toLocaleString()}` },
+                        { label: "Recent Credit Enquiries", value: profileData.reportSummary.last7DaysEnquiries }
+                    ].map((item, index) => (
+                        <button key={index} onClick={() => handleClick(item)}>
+                            <div className="bg-gray-50 rounded-xl shadow-sm border border-gray-200 p-6 transition-all duration-200 hover:shadow-md">
+                                <p className="text-sm font-medium text-gray-500">{item.label}</p>
+                                <p className="text-lg font-semibold text-gray-900 mt-1">{item.value}</p>
+                            </div>
+                        </button>
+                    ))}
+                </div>
+            </div>
+    
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 transition-all duration-200 hover:shadow-md">
+                <div className="flex items-center space-x-2">
+                    <ChartPie  className="w-6 h-6 text-blue-500" />
+                    <h2 className="text-2xl font-semibold text-gray-900">Chart</h2>
+                </div>
+                <div className="mt-4">
+                    <SummaryChart reportSummary={profileData.reportSummary} />
+                </div>
             </div>
         </div>
     );
+    
+
+    
 
     const renderCreditAccounts = () => (
         <div className="space-y-6">
-            
-            <h2 className="text-2xl font-semibold text-gray-900">Credit Accounts</h2>
+            <div className="flex items-center space-x-2">
+                <Building2 className="w-6 h-6 text-blue-500" />
+                <h2 className="text-2xl font-semibold text-gray-900">Credit Accounts</h2>
+            </div>
             <div className="space-y-6">
                 {profileData.creditAccounts.map((account) => (
                     <div key={account._id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 transition-all duration-200 hover:shadow-md">
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div className="col-span-3">
                                 <div className="flex items-center space-x-3">
+                                    <CreditCard className="w-5 h-5 " />
                                     <h3 className="text-lg font-semibold text-gray-900 capitalize">{account.bankName}</h3>
                                     <span className="px-2 py-1 text-sm font-medium rounded-full bg-blue-50 text-slate-700">
                                         Type- {account.accountType}
@@ -112,19 +140,26 @@ const ProfilesBoard = () => {
                                 </div>
                             </div>
                             {[
-                                { label: "Account Number", value: account.accountNumber },
-                                { label: "Current Balance", value: `₹${account.currentBalance.toLocaleString()}` },
-                                { label: "Amount Overdue", value: `₹${account.amountOverdue.toLocaleString()}` },
-                                { label: "Credit Limit", value: `₹${account.creditLimit.toLocaleString()}` }
+                                { label: "Account Number", value: account.accountNumber, icon: <FileText size={20} className="text-purple-500" /> },
+                                { label: "Current Balance", value: `₹${account.currentBalance.toLocaleString()}`, icon: <ArrowUpRight size={20} className="text-green-500" /> },
+                                { label: "Amount Overdue", value: `₹${account.amountOverdue.toLocaleString()}`, icon: <AlertCircle size={20} className="text-orange-500" />, 
+                                  className: account.amountOverdue > 0 ? "text-red-500" : "text-green-500" },
+                                { label: "Credit Limit", value: `₹${account.creditLimit.toLocaleString()}`, icon: <User size={20} className="text-blue-500" /> }
                             ].map((item, index) => (
                                 <div key={index}>
-                                    <p className="text-sm font-medium text-gray-500">{item.label}</p>
-                                    <p className="text-base font-semibold text-gray-900 mt-1">{item.value}</p>
+                                    <div className="flex items-center space-x-2">
+                                        {item.icon}
+                                        <p className="text-sm font-medium text-gray-500">{item.label}</p>
+                                    </div>
+                                    <p className={`text-base font-semibold mt-1 ${item.className || 'text-gray-900'}`}>{item.value}</p>
                                 </div>
                             ))}
                             <div className="col-span-3">
-                                <p className="text-sm font-medium text-gray-500">Address</p>
-                                <p className="text-base text-gray-900 mt-1">
+                                <div className="flex items-center space-x-2">
+                                    <MapPin className="w-4 h-4 text-gray-400" />
+                                    <p className="text-sm font-medium text-gray-500">Address</p>
+                                </div>
+                                <p className="text-base text-gray-900 mt-1 ml-6">
                                     {[
                                         account.address.firstLine,
                                         account.address.secondLine,
@@ -141,6 +176,7 @@ const ProfilesBoard = () => {
             </div>
         </div>
     );
+    
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-sky-50 to-blue-100">
@@ -149,7 +185,7 @@ const ProfilesBoard = () => {
                     <h1 className="text-3xl font-bold text-slate-800">Profile Details</h1>
                 </div>
             </div>
-
+    
             {copied && (
                 <div 
                     className="flex fixed top-5 left-1/2 items-center py-2 px-4 text-white bg-green-500 rounded-lg shadow-lg transition-transform duration-300 transform -translate-x-1/2 animate-slideIn"
@@ -157,7 +193,7 @@ const ProfilesBoard = () => {
                     <span>Copied to clipboard</span>
                 </div>
             )}
-
+    
             <div className="max-w-7xl mx-auto px-4 py-8">
                 <div className="flex flex-col lg:flex-row gap-8">
                     <div className="lg:w-64 flex-shrink-0">
@@ -184,18 +220,31 @@ const ProfilesBoard = () => {
                             </nav>
                         </div>
                     </div>
-
+    
                     <div className="flex-1">
-                        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
-                            {activeSection === 'basic' && renderBasicDetails()}
-                            {activeSection === 'summary' && renderReportSummary()}
-                            {activeSection === 'accounts' && renderCreditAccounts()}
-                        </div>
+                        {activeSection === 'basic' && (
+                            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
+                                {renderBasicDetails()}
+                            </div>
+                        )}
+                        
+                        {activeSection === 'summary' && (
+                            <div className="space-y-6">
+                                {renderReportSummary()}
+                            </div>
+                        )}
+    
+                        {activeSection === 'accounts' && (
+                            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
+                                {renderCreditAccounts()}
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
         </div>
     );
+    
 };
 
 export default ProfilesBoard;

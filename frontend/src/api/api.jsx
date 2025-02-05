@@ -15,5 +15,7 @@ export const upload = (formData) => api.post('/upload', formData,{
 });
 export const extract = (fileData) => api.post('/extract', fileData);
 export const profile = (id) => api.get(`retrieve/${id}`);
+export const creditDetails = (queryParams) => api.get(`retrieve?${queryParams}`, queryParams);
+export const creditStats = () => api.get('retrieve/stats/credit-score');
 
 export default api;
