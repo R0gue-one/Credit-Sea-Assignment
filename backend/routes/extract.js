@@ -27,7 +27,7 @@ const deleteFileAsync = (filePath) => {
 router.post("/", async (req, res) => {
   console.log("Extract request received:", req.body);
 
-  const { filename } = req.body;
+  const { filename, forceUpdate } = req.body;
   if (!filename) {
     return res.status(400).json({ error: "Filename required" });
   }
@@ -84,7 +84,7 @@ router.post("/", async (req, res) => {
     const uniqueAddresses = [...new Set(creditAccounts.map(acc => 
       JSON.stringify(acc.address)))].map(addr => JSON.parse(addr));
 
-    const extractedData = new CreditProfile({
+    const extractedData = {
       name: `${applicant.First_Name || ""} ${applicant.Last_Name || ""}`.trim(),
       mobilePhone: applicant.MobilePhoneNumber || "",
       pan: accounts[0]?.CAIS_Holder_Details?.Income_TAX_PAN || "",
@@ -102,14 +102,29 @@ router.post("/", async (req, res) => {
 
       creditAccounts: creditAccounts,
       addresses: uniqueAddresses
-    });
+    };
 
-    await extractedData.save();
+    // Check if record with same PAN exists
+    const existingProfile = await CreditProfile.findOne({ pan: extractedData.pan });
+
+    if (existingProfile && !forceUpdate) {
+      return res.status(409).json({ 
+        message: "Profile with this PAN already exists", 
+        existingData: existingProfile 
+      });
+    }
+
+    // Save or update the profile
+    const savedProfile = await CreditProfile.findOneAndUpdate(
+      { pan: extractedData.pan }, 
+      { $set: extractedData }, 
+      { upsert: true, new: true }
+    );
 
     await deleteFileAsync(filePath);
-    console.log(`File Succesfully Deleted at: ${filePath}`);
+    console.log(`File Successfully Deleted at: ${filePath}`);
 
-    res.json({ message: "Data extracted & saved", data: extractedData });
+    res.json({ message: "Data extracted & saved", data: savedProfile });
 
   } catch (error) {
     console.error("Extraction error:", error);

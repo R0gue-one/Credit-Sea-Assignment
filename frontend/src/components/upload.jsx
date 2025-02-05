@@ -60,21 +60,43 @@ export default function Upload() {
   };
 
   const handleExtract = async () => {
-    if (!uploadedFile) {
-      setMessage("No uploaded file found.");
-      return;
-    }
-    setIsLoading(true);
-    try {
-      await extract({ filename: uploadedFile });
-      setMessage("Data extracted successfully!");
-      setFile(null);
-      setUploadedFile("");
-    } catch (error) {
-      setMessage("Extraction failed. Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
+      if (!uploadedFile) {
+        setMessage("No uploaded file found.");
+        return;
+      }
+      setIsLoading(true);
+      try {
+        await extract({ filename: uploadedFile });
+        
+        setMessage("Data extracted successfully!");
+        setFile(null);
+        setUploadedFile("");
+      } catch (error) {
+        // Check if it's a 409 conflict error
+        if (error.response && error.response.status === 409) {
+          const confirmed = window.confirm(
+            "A profile with this PAN already exists. Do you want to replace it?"
+          );
+          
+          if (confirmed) {
+            try {
+              await extract({ 
+                filename: uploadedFile, 
+                forceUpdate: true 
+              });
+              setMessage("Data extracted successfully!");
+              setFile(null);
+              setUploadedFile("");
+            } catch (updateError) {
+              setMessage("Extraction failed. Please try again.");
+            }
+          }
+        } else {
+          setMessage("Extraction failed. Please try again.");
+        }
+      } finally {
+        setIsLoading(false);
+      }
   };
 
   return (

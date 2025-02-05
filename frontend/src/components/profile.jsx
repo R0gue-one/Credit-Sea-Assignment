@@ -144,9 +144,9 @@ const ProfilesBoard = () => {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-sky-50 to-blue-100">
-            <div className="bg-gradient-to-r from-blue-500 to-blue-600 shadow-lg">
+            <div className="bg-gradient-to-r from-blue-100 to-blue-200 shadow-lg">
                 <div className="max-w-7xl mx-auto px-4 py-8">
-                    <h1 className="text-3xl font-bold text-white">Profile Details</h1>
+                    <h1 className="text-3xl font-bold text-slate-800">Profile Details</h1>
                 </div>
             </div>
 

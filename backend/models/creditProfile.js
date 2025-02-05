@@ -24,7 +24,7 @@ const creditAccountSchema = new mongoose.Schema({
 const creditProfileSchema = new mongoose.Schema({
   name: String,
   mobilePhone: String,
-  pan: String,
+  pan: { type: String, unique: true },
   creditScore: Number,
   
   reportSummary: {
@@ -42,5 +42,6 @@ const creditProfileSchema = new mongoose.Schema({
 }, {
   timestamps: true
 });
+
 
 module.exports = mongoose.model("CreditProfile", creditProfileSchema);

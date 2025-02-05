@@ -78,10 +78,10 @@ const CreditProfilesDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sky-50 to-blue-100">
+    <div className="min-h-screen bg-slate-100">
       {/* Header */}
-      <div className="bg-blue-500 p-8">
-        <h1 className="text-3xl font-bold text-white text-left mx-64">Search Profiles</h1>
+      <div className="bg-white p-8 shadow-md shadow-gray-400/50 rounded-lg">
+        <h1 className="text-3xl font-bold text-black text-left mx-64">Search Profiles</h1>
       </div>
   
       <div className="container mx-auto px-4 py-6">
