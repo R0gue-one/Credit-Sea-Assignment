@@ -128,7 +128,7 @@ router.post("/", async (req, res) => {
 
   } catch (error) {
     console.error("Extraction error:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({ error: "Extraction Error" });
   }
 });
 

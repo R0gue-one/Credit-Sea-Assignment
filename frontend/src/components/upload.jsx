@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { upload, extract } from "../api/api";
 import { UploadCloud, FileText, Check, AlertCircle, FileJson } from "lucide-react";
+import { validateXMLFile } from "./validateXML";
 
 export default function Upload() {
   const [file, setFile] = useState(null);
@@ -19,11 +20,25 @@ export default function Upload() {
     return "bg-gradient-to-br from-slate-100 to-slate-300";
   };
 
-  const handleFileChange = (e) => {
+  const handleFileChange = async (e) => {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
-      setFile(selectedFile);
-      setMessage("");
+      try {
+        const validation = await validateXMLFile(selectedFile);
+        
+        if (validation.isValid) {
+          setFile(selectedFile);
+          setMessage("");
+          
+          // Show warnings if any
+          if (validation.warnings.length > 0) {
+            setMessage(`File accepted with warnings: ${validation.warnings.join(", ")}`);
+          }
+        }
+      } catch (error) {
+        setMessage(`Invalid XML file: ${error.error}`);
+        setFile(null);
+      }
     }
   };
 
@@ -50,54 +65,64 @@ export default function Upload() {
 
     try {
       const response = await upload(formData);
-      setUploadedFile(response.data.filename);
+      setUploadedFile(response.data.filename); // This is correct
       setMessage("Upload successful!");
     } catch (error) {
       setMessage("Upload failed. Please try again.");
+      setUploadedFile(""); // Clear uploadedFile on error
     } finally {
       setIsLoading(false);
     }
-  };
+};
 
-  const handleExtract = async () => {
-      if (!uploadedFile) {
-        setMessage("No uploaded file found.");
-        return;
-      }
-      setIsLoading(true);
-      try {
-        await extract({ filename: uploadedFile });
-        
-        setMessage("Data extracted successfully!");
+const handleExtract = async () => {
+    if (!uploadedFile) {
+      setMessage("No uploaded file found.");
+      return;
+    }
+    setIsLoading(true);
+    try {
+      await extract({ filename: uploadedFile });
+      setMessage("Data extracted successfully!");
+      
+      // Don't clear uploadedFile immediately
+      setTimeout(() => {
         setFile(null);
         setUploadedFile("");
-      } catch (error) {
-        // Check if it's a 409 conflict error
-        if (error.response && error.response.status === 409) {
-          const confirmed = window.confirm(
-            "A profile with this PAN already exists. Do you want to replace it?"
-          );
-          
-          if (confirmed) {
-            try {
-              await extract({ 
-                filename: uploadedFile, 
-                forceUpdate: true 
-              });
-              setMessage("Data extracted successfully!");
+        setMessage("");
+      }, 2000); // Clear after 2 seconds
+
+    } catch (error) {
+      if (error.response && error.response.status === 409) {
+        const confirmed = window.confirm(
+          "A profile with this PAN already exists. Do you want to replace it?"
+        );
+        
+        if (confirmed) {
+          try {
+            await extract({ 
+              filename: uploadedFile, 
+              forceUpdate: true 
+            });
+            setMessage("Data extracted successfully!");
+            setTimeout(() => {
               setFile(null);
               setUploadedFile("");
-            } catch (updateError) {
-              setMessage("Extraction failed. Please try again.");
-            }
+              setMessage("");
+            }, 2000);
+          } catch (updateError) {
+            setMessage("Extraction failed. Please try again.");
+            setUploadedFile("");
           }
-        } else {
-          setMessage("Extraction failed. Please try again.");
         }
-      } finally {
-        setIsLoading(false);
+      } else {
+        setMessage("Extraction failed. Please try again.");
+        setUploadedFile("");
       }
-  };
+    } finally {
+      setIsLoading(false);
+    }
+};
 
   return (
     <div className={`min-h-screen flex items-center justify-center p-4 transition-colors duration-500 ${getBackgroundClass()}`}>

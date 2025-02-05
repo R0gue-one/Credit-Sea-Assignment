@@ -30,10 +30,10 @@ const LandingPage = () => {
             <div className="space-y-6">
               <h1 className="text-6xl font-bold text-gray-900 leading-tight">
                 By Your Side for Every
-                <span className="text-blue-600"> Financial Need</span>
+                <span className="text-blue-500"> Financial Need</span>
               </h1>
               
-              <p className="text-xl text-gray-600 leading-relaxed">
+              <p className="text-xl text-sky-950 leading-relaxed">
                 Always with you for the best loan deals and the right financial decisions
               </p>
             </div>
@@ -54,7 +54,7 @@ const LandingPage = () => {
                 Search Profiles
               </button>
                 </Link>
-                <a href='https://github.com/R0gue-One' target='_blank'>
+                <a href='https://github.com/R0gue-one/Credit-Sea-Assignment' target='_blank'>
               <button className="flex items-center px-6 py-3.5 bg-gray-800 text-white rounded-xl hover:bg-gray-900 transition-all transform hover:scale-105 shadow-lg hover:shadow-gray-200">
                 <Github className="w-5 h-5 mr-2" />
                 GitHub
