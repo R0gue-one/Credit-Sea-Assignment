@@ -38,3 +38,40 @@ https://github.com/user-attachments/assets/d16bab51-3f06-487b-ab92-ac5ace964fc7
 **MERN**: MongoDB, Express.js, React and Node.js
 
 ### MongoDB Schema
+This schema is designed for storing credit profile data in a MongoDB database using Mongoose. It consists of 3 nested schemas:
+
+-  **Address Schema**: Stores address details.<br>
+   **Credit Account Schema**: Stores financial details of a credit account.<br>
+   **Credit Profile Schema**: Main schema, storing user details, credit accounts, and addresses.
+
+-  **Nested Arrays**<br>
+   creditAccounts: Stores multiple creditAccountSchema records. Each credit account references an address schema
+   addresses: Stores multiple addressSchema records.
+
+-  **Modular Structure** – Separate schemas (Address, CreditAccount) improve reusability and maintainability.
+-  Indexing pan (unique) for allowing updates and prevent duplication.
+-  Automatic Timestamps – Keeps track of record creation and updates without manual intervention.
+
+### Backend 
+Backend has 3 main routes:
+- #### `/Upload`
+   - Method: `POST` 
+   - The uplaoded file is downloaded temporarily in uploads folder.
+- #### `/Extract`
+   - Method: `POST`
+   - Validate Input: Checks if filename is provided.
+   - File Handling: Reads XML file from ./uploads/.
+   - Parse XML: Converts XML to JSON format.
+   - Extract Data: Retrieves applicant details, credit accounts, and summary.
+   - Check for Existing Profile: Searches for a profile with the same PAN.
+   - Save to Database: Inserts or updates the credit profile in MongoDB.
+Cleanup: Deletes the processed file.   
+- #### `/Retrive`
+   - Method: `GET`
+   - GET / – Fetch all credit profiles with pagination, allows filtering (by name, PAN, credit score), and sorting options.
+
+   - GET /:id – Retrieve a specific credit profile by its MongoDB Object ID.
+
+   - GET /pan/:pan – Get all credit profiles associated with a given PAN.
+
+   - GET /stats/credit-score – Get statistics on credit scores, including average, min, max, and total profiles.
