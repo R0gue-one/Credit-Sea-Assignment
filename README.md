@@ -85,5 +85,16 @@ Cleanup: Deletes the processed file.
    - Upload Process – The selected file is uploaded to the backend.   
    - Extraction Process – Once uploaded, the file can be processed to extract relevant data.
    - Error Handling & UI Feedback – Displays messages based on success and failure with background change reflecting the same.
-
+- #### `/credit-profile`
+  Allows user to search through the database to find required user and view his details
+  - Search filter: Allows user to filter profiles based on various filter using backend's filter ability
+    ![image](https://github.com/user-attachments/assets/b521321f-e16d-44d3-a6e7-1571d244e16f)
+ 
+  - Profiles list:
+    - Shows list of all profiles matching query with pagination
+    - Displays basic info with details button which sends user to `/profile` page
+    - Displays Summary on the right hand side
+      
+- #### `/profiles`
+   -  
    
