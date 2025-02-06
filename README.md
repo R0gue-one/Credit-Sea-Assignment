@@ -63,7 +63,11 @@ Backend has 3 main routes:
    - File Handling: Reads XML file from `./backend/uploads/`.
    - Parse XML: Converts XML to JSON format.
    - Extract Data: Retrieves applicant details, credit accounts, and summary.
-   - Check for Existing Profile: Searches for a profile with the same PAN.
+   - Check for Existing Profile: SBasic details:
+   ■ Name
+   ■ Mobile Phone
+   ■ PAN
+   ■ Credit Scoreearches for a profile with the same PAN.
    - Save to Database: Inserts or updates the credit profile in MongoDB.
 Cleanup: Deletes the processed file.   
 - #### `/Retrive`
@@ -98,5 +102,10 @@ Cleanup: Deletes the processed file.
     - Displays Summary on the right hand side
       
 - #### `/profiles`
-   -  
+  Displays profile information in 3 part: basic details, Report Summary, Credit Accounts
+  - Allows copying of basic info and report summary
+  - Shows charts for Report Summary
+  - Colored Credit Accounts for easy viewing 
+
+   
    
