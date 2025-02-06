@@ -52,7 +52,7 @@ This schema is designed for storing credit profile data in a MongoDB database us
 -  Indexing pan (unique) for allowing updates and prevent duplication.
 -  Automatic Timestamps – Keeps track of record creation and updates without manual intervention.
 
-### Backend 
+### Back-End 
 Backend has 3 main routes:
 - #### `/Upload`
    - Method: `POST` 
@@ -60,7 +60,7 @@ Backend has 3 main routes:
 - #### `/Extract`
    - Method: `POST`
    - Validate Input: Checks if filename is provided.
-   - File Handling: Reads XML file from ./uploads/.
+   - File Handling: Reads XML file from `./backend/uploads/`.
    - Parse XML: Converts XML to JSON format.
    - Extract Data: Retrieves applicant details, credit accounts, and summary.
    - Check for Existing Profile: Searches for a profile with the same PAN.
@@ -75,3 +75,15 @@ Cleanup: Deletes the processed file.
    - GET /pan/:pan – Get all credit profiles associated with a given PAN.
 
    - GET /stats/credit-score – Get statistics on credit scores, including average, min, max, and total profiles.
+ 
+
+### Front-End
+- #### `/upload`:
+  This React component provides an XML file upload and extraction and validates XML file to prevent corrupt upload:
+
+   - File Selection & Validation – Users can select an XML file manually or via drag-and-drop. The file is validated before upload.
+   - Upload Process – The selected file is uploaded to the backend.   
+   - Extraction Process – Once uploaded, the file can be processed to extract relevant data.
+   - Error Handling & UI Feedback – Displays messages based on success and failure with background change reflecting the same.
+
+   
