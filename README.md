@@ -93,6 +93,8 @@ Cleanup: Deletes the processed file.
   - Profiles list:
     - Shows list of all profiles matching query with pagination
     - Displays basic info with details button which sends user to `/profile` page
+
+  - Summary: 
     - Displays Summary on the right hand side
       
 - #### `/profiles`
