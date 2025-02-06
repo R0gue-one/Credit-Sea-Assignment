@@ -114,5 +114,24 @@ Cleanup: Deletes the processed file.
   - Shows charts for Report Summary
   - Colored Credit Accounts for easy viewing 
 
-   
-   
+
+### Error Handling
+
+#### Front-end
+Upload file in frontend takes only `.xml` files then validates for any errors in xml file using `/validateXML.jsx`
+**validateXML.jsx**:
+   - First pasres string -> xml using DOMParser and check for errors
+   - Then checks for structural errors
+   - Finally check common errors: Missing <?xml declaration but encoding is present etc.
+
+If an object with same PAN is already in database it askes the user if he want to replace the old object or if it was a mistake, in order to prevent uneccecary duplication
+
+Changes background based on success or error:
+![bg](https://github.com/user-attachments/assets/f7b18465-359b-4808-ab04-00adbd495345)
+
+#### Back-end
+Validates file exists and if duplicate exits in Mongo it returns `409 Conflict` handles the request via force update tag coming from front-end
+
+Handles error if there is any during data extraction returns extraction error
+
+Handles mongodb connection error with `500`
