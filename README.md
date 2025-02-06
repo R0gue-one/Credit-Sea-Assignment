@@ -40,6 +40,9 @@ https://github.com/user-attachments/assets/d16bab51-3f06-487b-ab92-ac5ace964fc7
 ### MongoDB Schema
 This schema is designed for storing credit profile data in a MongoDB database using Mongoose. It consists of 3 nested schemas:
 
+![image](https://github.com/user-attachments/assets/4e17c6ba-97f1-46e3-b535-607af2d3501b)
+
+
 -  **Address Schema**: Stores address details.<br>
    **Credit Account Schema**: Stores financial details of a credit account.<br>
    **Credit Profile Schema**: Main schema, storing user details, credit accounts, and addresses.
@@ -82,6 +85,10 @@ Cleanup: Deletes the processed file.
  
 
 ### Front-End
+
+![frontend](https://github.com/user-attachments/assets/11f2a79b-21ad-4a19-a8b3-a6b0ba977e81)
+
+
 - #### `/upload`:
   This React component provides an XML file upload and extraction and validates XML file to prevent corrupt upload:
 
